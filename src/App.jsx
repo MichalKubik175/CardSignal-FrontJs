@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import CardLinks from './pages/Protected/CardLinks';
 import Login from './pages/Auth/Login';
 import Cards from './pages/Protected/Cards';
+import PaymentCard from './pages/Protected/PaymentCard';
 import PrivateRoute from './routers/PrivateRoute';
 import PublicRoute from './routers/PublicRoute';
 import Layout from './components/layout';
@@ -32,6 +33,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <CardLinks />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/test",
+        element: (
+          <PrivateRoute>
+            <PaymentCard />
           </PrivateRoute>
         ),
       },

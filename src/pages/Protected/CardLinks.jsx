@@ -38,7 +38,7 @@ export default function CardLinks() {
 
   return (
     <div className="card-links-container">
-      <h1>My Card Links</h1>
+      <h1>Card Links</h1>
       <div className="card-links-grid">
         {cardLinks && cardLinks.length > 0 ? (
           cardLinks.map((link) => (
@@ -49,14 +49,13 @@ export default function CardLinks() {
                     <img src={link.imageUrl} alt={link.title} />
                   ) : (
                     <div className="default-thumbnail">
-                      {link.title.charAt(0).toUpperCase()}
+                      {link.name.charAt(0).toUpperCase()}
                     </div>
                   )}
                 </div>
                 <div className="card-link-info">
-                  <h3>{link.title}</h3>
-                  <p>{link.description}</p>
-                  <span className="card-link-url">{new URL(link.url).hostname}</span>
+                  <h3>{link.link}</h3>
+                  <span className="card-link-url">{link.name}</span>
                 </div>
               </a>
             </div>
