@@ -12,6 +12,7 @@ export default function PaymentCard() {
   });
 
   const [isFlipped, setIsFlipped] = useState(false);
+  const [cardColorClass, setCardColorClass] = useState('grey');
   const cardNumberRef = useRef(null);
   const expiryRef = useRef(null);
   const securityCodeRef = useRef(null);
@@ -52,63 +53,104 @@ export default function PaymentCard() {
     const cardNumberMask = IMask(cardNumberRef.current, {
       mask: [
         {
-          mask: '0000 000000 00000',
-          regex: '^3[47]\\d{0,13}',
-          cardtype: 'american express'
+            mask: '0000 000000 00000',
+            regex: '^3[47]\\d{0,13}',
+            cardtype: 'american express'
         },
         {
-          mask: '0000 0000 0000 0000',
-          regex: '^(?:6011|65\\d{0,2}|64[4-9]\\d?)\\d{0,12}',
-          cardtype: 'discover'
+            mask: '0000 0000 0000 0000',
+            regex: '^(?:6011|65\\d{0,2}|64[4-9]\\d?)\\d{0,12}',
+            cardtype: 'discover'
         },
-        // ... other card type masks
         {
-          mask: '0000 0000 0000 0000',
-          cardtype: 'Unknown'
+            mask: '0000 000000 0000',
+            regex: '^3(?:0([0-5]|9)|[689]\\d?)\\d{0,11}',
+            cardtype: 'diners'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^(5[1-5]\\d{0,2}|22[2-9]\\d{0,1}|2[3-7]\\d{0,2})\\d{0,12}',
+            cardtype: 'mastercard'
+        },
+        // {
+        //     mask: '0000-0000-0000-0000',
+        //     regex: '^(5019|4175|4571)\\d{0,12}',
+        //     cardtype: 'dankort'
+        // },
+        // {
+        //     mask: '0000-0000-0000-0000',
+        //     regex: '^63[7-9]\\d{0,13}',
+        //     cardtype: 'instapayment'
+        // },
+        {
+            mask: '0000 000000 00000',
+            regex: '^(?:2131|1800)\\d{0,11}',
+            cardtype: 'jcb15'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^(?:35\\d{0,2})\\d{0,12}',
+            cardtype: 'jcb'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^(?:5[0678]\\d{0,2}|6304|67\\d{0,2})\\d{0,12}',
+            cardtype: 'maestro'
+        },
+        // {
+        //     mask: '0000-0000-0000-0000',
+        //     regex: '^220[0-4]\\d{0,12}',
+        //     cardtype: 'mir'
+        // },
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^4\\d{0,15}',
+            cardtype: 'visa'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            regex: '^62\\d{0,14}',
+            cardtype: 'unionpay'
+        },
+        {
+            mask: '0000 0000 0000 0000',
+            cardtype: 'Unknown'
         }
-      ],
-      dispatch: function (appended, dynamicMasked) {
-        const number = (dynamicMasked.value + appended).replace(/\D/g, '');
-        for (let i = 0; i < dynamicMasked.compiledMasks.length; i++) {
-          let re = new RegExp(dynamicMasked.compiledMasks[i].regex);
-          if (number.match(re) != null) {
-            return dynamicMasked.compiledMasks[i];
-          }
+    ],
+    dispatch: function (appended, dynamicMasked) {
+        var number = (dynamicMasked.value + appended).replace(/\D/g, '');
+
+        for (var i = 0; i < dynamicMasked.compiledMasks.length; i++) {
+            let re = new RegExp(dynamicMasked.compiledMasks[i].regex);
+            if (number.match(re) != null) {
+                return dynamicMasked.compiledMasks[i];
+            }
         }
-      }
-    });
+    }
+});
 
     // Initialize IMask for expiry date
     const expiryMask = IMask(expiryRef.current, {
       mask: 'MM{/}YY',
       blocks: {
+      MM: {
+      mask: IMask.MaskedRange,
+      from: 1,
+      to: 12
+      },
 
-MM: {
-
-mask: IMask.MaskedRange,
-
-from: 1,
-
-to: 12
-
-},
-
-YY: {
-
-mask: IMask.MaskedRange,
-
-from: 0,
-
-to: 99
-
-}
+      YY: {
+      mask: IMask.MaskedRange,
+      from: 0,
+      to: 99
+      }
 
 }
     });
 
     // Initialize IMask for security code
     const securityCodeMask = IMask(securityCodeRef.current, {
-      mask: '0000'
+      mask: '000'
     });
 
     // Handle card type changes
@@ -162,8 +204,8 @@ to: 99
       default: colorClass = 'grey';
     }
 
-    // Update color classes - you'll need to implement this in your CSS
-    // This would involve adding/removing the appropriate color classes
+      // Update color classes - you'll need to implement this in your CSS
+      // This would involve adding/removing the appropriate color classes
   };
 
   const handleNameChange = (e) => {
@@ -202,7 +244,8 @@ to: 99
       <div className="container">
         <div className={`creditcard ${isFlipped ? 'flipped' : ''}`} onClick={toggleFlip}>
           <div className="front">
-            <div id="ccsingle" ref={ccSingleRef}></div>
+            <div id="ccsingle" ref={ccSingleRef}>
+            </div>
             <svg version="1.1" id="cardfront" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
                 x="0px" y="0px" viewBox="0 0 750 471" style={{enableBackground: 'new 0 0 750 471'}} xmlSpace="preserve">
               {/* Front SVG content */}
@@ -212,17 +255,66 @@ to: 99
               <text transform="matrix(1 0 0 1 54.1064 428.1723)" id="svgname" className="st2 st5 st6">
                 {cardData.name.toUpperCase()}
               </text>
+              <text transform="matrix(1 0 0 1 65.1054 241.5)" class="st7 st5 st8">card number</text>
+              <text transform="matrix(1 0 0 1 54.1074 389.8793)" class="st7 st5 st8">cardholder name</text>
               <text transform="matrix(1 0 0 1 574.4219 433.8095)" id="svgexpire" className="st2 st5 st9">
                 {cardData.expiry || 'MM/YY'}
               </text>
+              <text transform="matrix(1 0 0 1 479.3848 417.0097)" class="st2 st10 st11">VALID</text>
+              <text transform="matrix(1 0 0 1 479.3848 435.6762)" class="st2 st10 st11">THRU</text>
+              <g id="cchip">
+                            <g>
+                                <path class="st2" d="M168.1,143.6H82.9c-10.2,0-18.5-8.3-18.5-18.5V74.9c0-10.2,8.3-18.5,18.5-18.5h85.3
+                        c10.2,0,18.5,8.3,18.5,18.5v50.2C186.6,135.3,178.3,143.6,168.1,143.6z"></path>
+                            </g>
+                            <g>
+                                <g>
+                                    <rect x="82" y="70" class="st12" width="1.5" height="60"></rect>
+                                </g>
+                                <g>
+                                    <rect x="167.4" y="70" class="st12" width="1.5" height="60"></rect>
+                                </g>
+                                <g>
+                                    <path class="st12" d="M125.5,130.8c-10.2,0-18.5-8.3-18.5-18.5c0-4.6,1.7-8.9,4.7-12.3c-3-3.4-4.7-7.7-4.7-12.3
+                            c0-10.2,8.3-18.5,18.5-18.5s18.5,8.3,18.5,18.5c0,4.6-1.7,8.9-4.7,12.3c3,3.4,4.7,7.7,4.7,12.3
+                            C143.9,122.5,135.7,130.8,125.5,130.8z M125.5,70.8c-9.3,0-16.9,7.6-16.9,16.9c0,4.4,1.7,8.6,4.8,11.8l0.5,0.5l-0.5,0.5
+                            c-3.1,3.2-4.8,7.4-4.8,11.8c0,9.3,7.6,16.9,16.9,16.9s16.9-7.6,16.9-16.9c0-4.4-1.7-8.6-4.8-11.8l-0.5-0.5l0.5-0.5
+                            c3.1-3.2,4.8-7.4,4.8-11.8C142.4,78.4,134.8,70.8,125.5,70.8z"></path>
+                                </g>
+                                <g>
+                                    <rect x="82.8" y="82.1" class="st12" width="25.8" height="1.5"></rect>
+                                </g>
+                                <g>
+                                    <rect x="82.8" y="117.9" class="st12" width="26.1" height="1.5"></rect>
+                                </g>
+                                <g>
+                                    <rect x="142.4" y="82.1" class="st12" width="25.8" height="1.5"></rect>
+                                </g>
+                                <g>
+                                    <rect x="142" y="117.9" class="st12" width="26.2" height="1.5"></rect>
+                                </g>
+                            </g>
+                        </g>
+              <polygon class="st2" points="554.5,421 540.4,414.2 540.4,427.9 		"></polygon>
               {/* Rest of the front SVG */}
             </svg>
+            
           </div>
           
           <div className="back">
             <svg version="1.1" id="cardback" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
                 x="0px" y="0px" viewBox="0 0 750 471" style={{enableBackground: 'new 0 0 750 471'}} xmlSpace="preserve">
               {/* Back SVG content */}
+              <g>
+                            <path class="st3" d="M701.1,249.1H48.9c-3.3,0-6-2.7-6-6v-52.5c0-3.3,2.7-6,6-6h652.1c3.3,0,6,2.7,6,6v52.5
+                    C707.1,246.4,704.4,249.1,701.1,249.1z"></path>
+                            <rect x="42.9" y="198.6" class="st4" width="664.1" height="10.5"></rect>
+                            <rect x="42.9" y="224.5" class="st4" width="664.1" height="10.5"></rect>
+                            <path class="st5" d="M701.1,184.6H618h-8h-10v64.5h10h8h83.1c3.3,0,6-2.7,6-6v-52.5C707.1,187.3,704.4,184.6,701.1,184.6z"></path>
+                        </g>
+                        <rect x="58.1" y="378.6" class="st11" width="375.5" height="13.5"></rect>
+                        <rect x="58.1" y="405.6" class="st11" width="421.7" height="13.5"></rect>
+                        <text transform="matrix(1 0 0 1 518.083 280.0879)" class="st9 st6 st10">security code</text>
               <text transform="matrix(1 0 0 1 621.999 227.2734)" id="svgsecurity" className="st6 st7">
                 {cardData.securityCode || '•••'}
               </text>
@@ -250,7 +342,6 @@ to: 99
         
         <div className="field-container">
           <label htmlFor="cardnumber">Card Number</label>
-          <span id="generatecard" onClick={generateRandomCard}>generate random</span>
           <input 
             id="cardnumber" 
             type="text" 

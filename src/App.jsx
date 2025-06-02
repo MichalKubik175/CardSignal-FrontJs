@@ -16,6 +16,7 @@ export const router = createBrowserRouter([
         path: "/login",
         element: (
           <PublicRoute>
+            <Navbar />
             <Login />
           </PublicRoute>
         ),
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
         path: "/cards",
         element: (
           <PrivateRoute>
+            <Navbar />
             <Cards />
           </PrivateRoute>
         ),
@@ -32,6 +34,7 @@ export const router = createBrowserRouter([
         path: "/cardlinks",
         element: (
           <PrivateRoute>
+            <Navbar />
             <CardLinks />
           </PrivateRoute>
         ),
@@ -48,6 +51,7 @@ export const router = createBrowserRouter([
         path: "/",
         element: (
           <PrivateRoute>
+            <Navbar />
             <Cards />
           </PrivateRoute>
         ),

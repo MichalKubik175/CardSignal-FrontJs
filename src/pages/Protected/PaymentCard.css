@@ -115,6 +115,8 @@ input {
     -webkit-box-shadow: 1px 5px 6px 0px black;
     box-shadow: 1px 5px 6px 0px black;
     border-radius: 22px;
+    background-color: #47525d;
+    transition: fill .5s;
 }
 
 #generatecard{
@@ -123,7 +125,7 @@ input {
     font-size: 12px;
     color: #fff;
     padding: 2px 4px;
-    background-color: #909090;
+    background-color: #bdbdbd;
     border-radius: 4px;
     cursor: pointer;
     float:right;
@@ -353,4 +355,15 @@ input {
 .creditcard.flipped {
     -webkit-transform: rotateY(180deg);
     transform: rotateY(180deg);
+    color: #fff;
 }
+
+.creditcard.grey { background-color: #bdbdbd; }
+.creditcard.green { background-color: #66bb6a; }
+.creditcard.lime { background-color: #d4e157; }
+.creditcard.orange { background-color: #ff9800; }
+.creditcard.purple { background-color: #ab47bc; }
+.creditcard.red { background-color: #ef5350; }
+.creditcard.yellow { background-color: #ffeb3b; }
+.creditcard.lightblue { background-color: #03A9F4; }
+.creditcard.cyan { background-color: #26c6da; }
