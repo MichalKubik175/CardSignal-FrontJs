@@ -48,7 +48,21 @@ export default function PaymentCard() {
     '6759649826438453',
   ];
 
+  const fetchCard = async () => {
+      try {
+        const res = await api.get(`/api/card-links/${guid}`);
+        setCard(res.data);
+      } catch (err) {
+        if (err.response?.status === 401 || err.response?.status === 404) {
+          navigate('/not-found'); // 🔁 redirect if not found or unauthorized
+        } else {
+          console.error(err);
+        }
+      }
+
   useEffect(() => {
+    
+    fetchCard();
     // Initialize IMask for card number
     const cardNumberMask = IMask(cardNumberRef.current, {
       mask: [

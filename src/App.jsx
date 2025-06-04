@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import CardLinks from './pages/Protected/CardLinks';
 import Login from './pages/Auth/Login';
 import Cards from './pages/Protected/Cards';
+import CreateCardLink from './pages/Protected/CreateCardLink'
 import PaymentCard from './pages/Protected/PaymentCard';
 import PrivateRoute from './routers/PrivateRoute';
 import PublicRoute from './routers/PublicRoute';
@@ -36,6 +37,15 @@ export const router = createBrowserRouter([
           <PrivateRoute>
             <Navbar />
             <CardLinks />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/createcardlink",
+        element: (
+          <PrivateRoute>
+            <Navbar />
+            <CreateCardLink />
           </PrivateRoute>
         ),
       },
