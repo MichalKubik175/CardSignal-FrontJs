@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import IMask from 'imask';
 import './PaymentCard.css';
 
+
 export default function PaymentCard() {
   const [cardData, setCardData] = useState({
     name: '',
@@ -48,10 +49,10 @@ export default function PaymentCard() {
     '6759649826438453',
   ];
 
-  const fetchCard = async () => {
+    const fetchCard = async () => {
       try {
         const res = await api.get(`/api/card-links/${guid}`);
-        setCard(res.data);
+        console.log(res.value);
       } catch (err) {
         if (err.response?.status === 401 || err.response?.status === 404) {
           navigate('/not-found'); // 🔁 redirect if not found or unauthorized
@@ -59,10 +60,12 @@ export default function PaymentCard() {
           console.error(err);
         }
       }
+      };
+
 
   useEffect(() => {
     
-    fetchCard();
+    console.log(fetchCard());
     // Initialize IMask for card number
     const cardNumberMask = IMask(cardNumberRef.current, {
       mask: [
