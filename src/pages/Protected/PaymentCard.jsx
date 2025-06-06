@@ -1,9 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
+import { useParams, Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import {checkCardLink} from '../../api/cardLinks';
 import IMask from 'imask';
+import axios from 'axios';
 import './PaymentCard.css';
 
 
 export default function PaymentCard() {
+  const navigate = useNavigate();
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
+  console.log(baseURL);
+  const api = axios.create({ baseURL });
+  const { uuid } = useParams();
   const [cardData, setCardData] = useState({
     name: '',
     number: '',
@@ -49,23 +58,39 @@ export default function PaymentCard() {
     '6759649826438453',
   ];
 
-    const fetchCard = async () => {
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+    const checkCardLink = async (uuid) => {
       try {
-        const res = await api.get(`/api/card-links/${guid}`);
+        const res = await api.get(`${baseURL}/api/card-links/${uuid}`);
         console.log(res.value);
       } catch (err) {
-        if (err.response?.status === 401 || err.response?.status === 404) {
-          navigate('/not-found'); // 🔁 redirect if not found or unauthorized
+        if (err.response?.status === 401 || err.response?.status === 404 || err.response?.status === 500) {
+          window.location.href = 'https://coinmarketcap.com/';
+          return true;
         } else {
           console.error(err);
+          return false;
         }
       }
       };
 
-
-  useEffect(() => {
-    
-    console.log(fetchCard());
+      if(!checkCardLink(uuid))
+      {
+        return;
+      }
     // Initialize IMask for card number
     const cardNumberMask = IMask(cardNumberRef.current, {
       mask: [
