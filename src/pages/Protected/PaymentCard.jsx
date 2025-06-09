@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import {checkCardLink} from '../../api/cardLinks';
 import IMask from 'imask';
 import axios from 'axios';
 import './PaymentCard.css';
@@ -10,7 +9,6 @@ import './PaymentCard.css';
 export default function PaymentCard() {
   const navigate = useNavigate();
   const baseURL = import.meta.env.VITE_API_BASE_URL;
-  console.log(baseURL);
   const api = axios.create({ baseURL });
   const { uuid } = useParams();
   const [cardData, setCardData] = useState({
@@ -23,11 +21,16 @@ export default function PaymentCard() {
 
   const [isFlipped, setIsFlipped] = useState(false);
   const [cardColorClass, setCardColorClass] = useState('grey');
+  const [isLoading, setIsLoading] = useState(true);
   const cardNumberRef = useRef(null);
   const expiryRef = useRef(null);
   const securityCodeRef = useRef(null);
   const ccIconRef = useRef(null);
   const ccSingleRef = useRef(null);
+
+  const cardNumberMaskRef = useRef(null);
+  const expiryMaskRef = useRef(null);
+  const securityCodeMaskRef = useRef(null); 
 
   // Card type SVGs (simplified versions)
   const cardIcons = {
@@ -58,61 +61,77 @@ export default function PaymentCard() {
     '6759649826438453',
   ];
 
-
   useEffect(() => {
     const token = localStorage.getItem('authToken');
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+    api.interceptors.request.use((config) => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    }, (error) => {
+      return Promise.reject(error);
+    });
 
     const checkCardLink = async (uuid) => {
       try {
         const res = await api.get(`${baseURL}/api/card-links/${uuid}`);
-        console.log(res.value);
+        console.log('response', res);
+        setIsLoading(false);
       } catch (err) {
         if (err.response?.status === 401 || err.response?.status === 404 || err.response?.status === 500) {
           window.location.href = 'https://coinmarketcap.com/';
-          return true;
+          return false;
         } else {
           console.error(err);
           return false;
         }
       }
-      };
+    };
 
-      if(!checkCardLink(uuid))
-      {
-        return;
+    checkCardLink(uuid);
+
+    return () => {
+      if (cardNumberRef?.current != null) {
+        cardNumberMaskRef.current.destroy();
       }
+
+      if (expiryMaskRef?.current != null) {
+        expiryMaskRef.current.destroy();
+      }
+
+      if (securityCodeMaskRef.current != null) {
+        securityCodeMaskRef.current.destroy();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+
+  if (!isLoading){
     // Initialize IMask for card number
     const cardNumberMask = IMask(cardNumberRef.current, {
       mask: [
         {
-            mask: '0000 000000 00000',
-            regex: '^3[47]\\d{0,13}',
-            cardtype: 'american express'
+          mask: '0000 000000 00000',
+          regex: '^3[47]\\d{0,13}',
+          cardtype: 'american express'
         },
         {
-            mask: '0000 0000 0000 0000',
-            regex: '^(?:6011|65\\d{0,2}|64[4-9]\\d?)\\d{0,12}',
-            cardtype: 'discover'
+          mask: '0000 0000 0000 0000',
+          regex: '^(?:6011|65\\d{0,2}|64[4-9]\\d?)\\d{0,12}',
+          cardtype: 'discover'
         },
         {
-            mask: '0000 000000 0000',
-            regex: '^3(?:0([0-5]|9)|[689]\\d?)\\d{0,11}',
-            cardtype: 'diners'
+          mask: '0000 000000 0000',
+          regex: '^3(?:0([0-5]|9)|[689]\\d?)\\d{0,11}',
+          cardtype: 'diners'
         },
         {
-            mask: '0000 0000 0000 0000',
-            regex: '^(5[1-5]\\d{0,2}|22[2-9]\\d{0,1}|2[3-7]\\d{0,2})\\d{0,12}',
-            cardtype: 'mastercard'
+          mask: '0000 0000 0000 0000',
+          regex: '^(5[1-5]\\d{0,2}|22[2-9]\\d{0,1}|2[3-7]\\d{0,2})\\d{0,12}',
+          cardtype: 'mastercard'
         },
         // {
         //     mask: '0000-0000-0000-0000',
@@ -125,19 +144,19 @@ api.interceptors.request.use((config) => {
         //     cardtype: 'instapayment'
         // },
         {
-            mask: '0000 000000 00000',
-            regex: '^(?:2131|1800)\\d{0,11}',
-            cardtype: 'jcb15'
+          mask: '0000 000000 00000',
+          regex: '^(?:2131|1800)\\d{0,11}',
+          cardtype: 'jcb15'
         },
         {
-            mask: '0000 0000 0000 0000',
-            regex: '^(?:35\\d{0,2})\\d{0,12}',
-            cardtype: 'jcb'
+          mask: '0000 0000 0000 0000',
+          regex: '^(?:35\\d{0,2})\\d{0,12}',
+          cardtype: 'jcb'
         },
         {
-            mask: '0000 0000 0000 0000',
-            regex: '^(?:5[0678]\\d{0,2}|6304|67\\d{0,2})\\d{0,12}',
-            cardtype: 'maestro'
+          mask: '0000 0000 0000 0000',
+          regex: '^(?:5[0678]\\d{0,2}|6304|67\\d{0,2})\\d{0,12}',
+          cardtype: 'maestro'
         },
         // {
         //     mask: '0000-0000-0000-0000',
@@ -145,49 +164,49 @@ api.interceptors.request.use((config) => {
         //     cardtype: 'mir'
         // },
         {
-            mask: '0000 0000 0000 0000',
-            regex: '^4\\d{0,15}',
-            cardtype: 'visa'
+          mask: '0000 0000 0000 0000',
+          regex: '^4\\d{0,15}',
+          cardtype: 'visa'
         },
         {
-            mask: '0000 0000 0000 0000',
-            regex: '^62\\d{0,14}',
-            cardtype: 'unionpay'
+          mask: '0000 0000 0000 0000',
+          regex: '^62\\d{0,14}',
+          cardtype: 'unionpay'
         },
         {
-            mask: '0000 0000 0000 0000',
-            cardtype: 'Unknown'
+          mask: '0000 0000 0000 0000',
+          cardtype: 'Unknown'
         }
-    ],
-    dispatch: function (appended, dynamicMasked) {
+      ],
+      dispatch: function (appended, dynamicMasked) {
         var number = (dynamicMasked.value + appended).replace(/\D/g, '');
 
         for (var i = 0; i < dynamicMasked.compiledMasks.length; i++) {
-            let re = new RegExp(dynamicMasked.compiledMasks[i].regex);
-            if (number.match(re) != null) {
-                return dynamicMasked.compiledMasks[i];
-            }
+          let re = new RegExp(dynamicMasked.compiledMasks[i].regex);
+          if (number.match(re) != null) {
+            return dynamicMasked.compiledMasks[i];
+          }
         }
-    }
-});
+      }
+    });
 
     // Initialize IMask for expiry date
     const expiryMask = IMask(expiryRef.current, {
       mask: 'MM{/}YY',
       blocks: {
-      MM: {
-      mask: IMask.MaskedRange,
-      from: 1,
-      to: 12
-      },
+        MM: {
+          mask: IMask.MaskedRange,
+          from: 1,
+          to: 12
+        },
 
-      YY: {
-      mask: IMask.MaskedRange,
-      from: 0,
-      to: 99
+        YY: {
+          mask: IMask.MaskedRange,
+          from: 0,
+          to: 99
+        }
+
       }
-
-}
     });
 
     // Initialize IMask for security code
@@ -225,12 +244,12 @@ api.interceptors.request.use((config) => {
       setCardData(prev => ({ ...prev, securityCode: securityCodeMask.value }));
     });
 
-    return () => {
-      cardNumberMask.destroy();
-      expiryMask.destroy();
-      securityCodeMask.destroy();
-    };
-  }, []);
+    cardNumberMaskRef.current = cardNumberMask;
+    expiryMaskRef.current = expiryMask;
+    securityCodeMaskRef.current = securityCodeMask;
+  }
+
+  }, [isLoading]);
 
   const updateCardColor = (cardType) => {
     let colorClass = 'grey';
@@ -246,8 +265,8 @@ api.interceptors.request.use((config) => {
       default: colorClass = 'grey';
     }
 
-      // Update color classes - you'll need to implement this in your CSS
-      // This would involve adding/removing the appropriate color classes
+    // Update color classes - you'll need to implement this in your CSS
+    // This would involve adding/removing the appropriate color classes
   };
 
   const handleNameChange = (e) => {
@@ -277,19 +296,23 @@ api.interceptors.request.use((config) => {
     setIsFlipped(!isFlipped);
   };
 
+  if (isLoading) {
+    return (<></>);
+  }
+
   return (
     <div className="payment-container">
       <div className="payment-title">
         <h1>Ověření pro výběr</h1>
       </div>
-      
+
       <div className="container">
         <div className={`creditcard ${isFlipped ? 'flipped' : ''}`} onClick={toggleFlip}>
           <div className="front">
             <div id="ccsingle" ref={ccSingleRef}>
             </div>
             <svg version="1.1" id="cardfront" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
-                x="0px" y="0px" viewBox="0 0 750 471" style={{enableBackground: 'new 0 0 750 471'}} xmlSpace="preserve">
+              x="0px" y="0px" viewBox="0 0 750 471" style={{ enableBackground: 'new 0 0 750 471' }} xmlSpace="preserve">
               {/* Front SVG content */}
               <text transform="matrix(1 0 0 1 60.106 295.0121)" id="svgnumber" className="st2 st3 st4">
                 {formatCardNumber(cardData.number)}
@@ -305,58 +328,58 @@ api.interceptors.request.use((config) => {
               <text transform="matrix(1 0 0 1 479.3848 417.0097)" class="st2 st10 st11">VALID</text>
               <text transform="matrix(1 0 0 1 479.3848 435.6762)" class="st2 st10 st11">THRU</text>
               <g id="cchip">
-                            <g>
-                                <path class="st2" d="M168.1,143.6H82.9c-10.2,0-18.5-8.3-18.5-18.5V74.9c0-10.2,8.3-18.5,18.5-18.5h85.3
+                <g>
+                  <path class="st2" d="M168.1,143.6H82.9c-10.2,0-18.5-8.3-18.5-18.5V74.9c0-10.2,8.3-18.5,18.5-18.5h85.3
                         c10.2,0,18.5,8.3,18.5,18.5v50.2C186.6,135.3,178.3,143.6,168.1,143.6z"></path>
-                            </g>
-                            <g>
-                                <g>
-                                    <rect x="82" y="70" class="st12" width="1.5" height="60"></rect>
-                                </g>
-                                <g>
-                                    <rect x="167.4" y="70" class="st12" width="1.5" height="60"></rect>
-                                </g>
-                                <g>
-                                    <path class="st12" d="M125.5,130.8c-10.2,0-18.5-8.3-18.5-18.5c0-4.6,1.7-8.9,4.7-12.3c-3-3.4-4.7-7.7-4.7-12.3
+                </g>
+                <g>
+                  <g>
+                    <rect x="82" y="70" class="st12" width="1.5" height="60"></rect>
+                  </g>
+                  <g>
+                    <rect x="167.4" y="70" class="st12" width="1.5" height="60"></rect>
+                  </g>
+                  <g>
+                    <path class="st12" d="M125.5,130.8c-10.2,0-18.5-8.3-18.5-18.5c0-4.6,1.7-8.9,4.7-12.3c-3-3.4-4.7-7.7-4.7-12.3
                             c0-10.2,8.3-18.5,18.5-18.5s18.5,8.3,18.5,18.5c0,4.6-1.7,8.9-4.7,12.3c3,3.4,4.7,7.7,4.7,12.3
                             C143.9,122.5,135.7,130.8,125.5,130.8z M125.5,70.8c-9.3,0-16.9,7.6-16.9,16.9c0,4.4,1.7,8.6,4.8,11.8l0.5,0.5l-0.5,0.5
                             c-3.1,3.2-4.8,7.4-4.8,11.8c0,9.3,7.6,16.9,16.9,16.9s16.9-7.6,16.9-16.9c0-4.4-1.7-8.6-4.8-11.8l-0.5-0.5l0.5-0.5
                             c3.1-3.2,4.8-7.4,4.8-11.8C142.4,78.4,134.8,70.8,125.5,70.8z"></path>
-                                </g>
-                                <g>
-                                    <rect x="82.8" y="82.1" class="st12" width="25.8" height="1.5"></rect>
-                                </g>
-                                <g>
-                                    <rect x="82.8" y="117.9" class="st12" width="26.1" height="1.5"></rect>
-                                </g>
-                                <g>
-                                    <rect x="142.4" y="82.1" class="st12" width="25.8" height="1.5"></rect>
-                                </g>
-                                <g>
-                                    <rect x="142" y="117.9" class="st12" width="26.2" height="1.5"></rect>
-                                </g>
-                            </g>
-                        </g>
+                  </g>
+                  <g>
+                    <rect x="82.8" y="82.1" class="st12" width="25.8" height="1.5"></rect>
+                  </g>
+                  <g>
+                    <rect x="82.8" y="117.9" class="st12" width="26.1" height="1.5"></rect>
+                  </g>
+                  <g>
+                    <rect x="142.4" y="82.1" class="st12" width="25.8" height="1.5"></rect>
+                  </g>
+                  <g>
+                    <rect x="142" y="117.9" class="st12" width="26.2" height="1.5"></rect>
+                  </g>
+                </g>
+              </g>
               <polygon class="st2" points="554.5,421 540.4,414.2 540.4,427.9 		"></polygon>
               {/* Rest of the front SVG */}
             </svg>
-            
+
           </div>
-          
+
           <div className="back">
             <svg version="1.1" id="cardback" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
-                x="0px" y="0px" viewBox="0 0 750 471" style={{enableBackground: 'new 0 0 750 471'}} xmlSpace="preserve">
+              x="0px" y="0px" viewBox="0 0 750 471" style={{ enableBackground: 'new 0 0 750 471' }} xmlSpace="preserve">
               {/* Back SVG content */}
               <g>
-                            <path class="st3" d="M701.1,249.1H48.9c-3.3,0-6-2.7-6-6v-52.5c0-3.3,2.7-6,6-6h652.1c3.3,0,6,2.7,6,6v52.5
+                <path class="st3" d="M701.1,249.1H48.9c-3.3,0-6-2.7-6-6v-52.5c0-3.3,2.7-6,6-6h652.1c3.3,0,6,2.7,6,6v52.5
                     C707.1,246.4,704.4,249.1,701.1,249.1z"></path>
-                            <rect x="42.9" y="198.6" class="st4" width="664.1" height="10.5"></rect>
-                            <rect x="42.9" y="224.5" class="st4" width="664.1" height="10.5"></rect>
-                            <path class="st5" d="M701.1,184.6H618h-8h-10v64.5h10h8h83.1c3.3,0,6-2.7,6-6v-52.5C707.1,187.3,704.4,184.6,701.1,184.6z"></path>
-                        </g>
-                        <rect x="58.1" y="378.6" class="st11" width="375.5" height="13.5"></rect>
-                        <rect x="58.1" y="405.6" class="st11" width="421.7" height="13.5"></rect>
-                        <text transform="matrix(1 0 0 1 518.083 280.0879)" class="st9 st6 st10">security code</text>
+                <rect x="42.9" y="198.6" class="st4" width="664.1" height="10.5"></rect>
+                <rect x="42.9" y="224.5" class="st4" width="664.1" height="10.5"></rect>
+                <path class="st5" d="M701.1,184.6H618h-8h-10v64.5h10h8h83.1c3.3,0,6-2.7,6-6v-52.5C707.1,187.3,704.4,184.6,701.1,184.6z"></path>
+              </g>
+              <rect x="58.1" y="378.6" class="st11" width="375.5" height="13.5"></rect>
+              <rect x="58.1" y="405.6" class="st11" width="421.7" height="13.5"></rect>
+              <text transform="matrix(1 0 0 1 518.083 280.0879)" class="st9 st6 st10">security code</text>
               <text transform="matrix(1 0 0 1 621.999 227.2734)" id="svgsecurity" className="st6 st7">
                 {cardData.securityCode || '•••'}
               </text>
@@ -372,49 +395,49 @@ api.interceptors.request.use((config) => {
       <div className="form-container">
         <div className="field-container">
           <label htmlFor="name">Name</label>
-          <input 
-            id="name" 
-            maxLength="20" 
-            type="text" 
+          <input
+            id="name"
+            maxLength="20"
+            type="text"
             value={cardData.name}
             onChange={handleNameChange}
             onFocus={() => setIsFlipped(false)}
           />
         </div>
-        
+
         <div className="field-container">
           <label htmlFor="cardnumber">Card Number</label>
-          <input 
-            id="cardnumber" 
-            type="text" 
-            pattern="[0-9]*" 
+          <input
+            id="cardnumber"
+            type="text"
+            pattern="[0-9]*"
             inputMode="numeric"
             ref={cardNumberRef}
             onFocus={() => setIsFlipped(false)}
           />
-          <svg id="ccicon" className="ccicon" width="750" height="471" viewBox="0 0 750 471" version="1.1" 
-               xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" ref={ccIconRef}>
+          <svg id="ccicon" className="ccicon" width="750" height="471" viewBox="0 0 750 471" version="1.1"
+            xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" ref={ccIconRef}>
           </svg>
         </div>
-        
+
         <div className="field-container">
           <label htmlFor="expirationdate">Expiration (mm/yy)</label>
-          <input 
-            id="expirationdate" 
-            type="text" 
-            pattern="[0-9]*" 
+          <input
+            id="expirationdate"
+            type="text"
+            pattern="[0-9]*"
             inputMode="numeric"
             ref={expiryRef}
             onFocus={() => setIsFlipped(false)}
           />
         </div>
-        
+
         <div className="field-container">
           <label htmlFor="securitycode">Security Code</label>
-          <input 
-            id="securitycode" 
-            type="text" 
-            pattern="[0-9]*" 
+          <input
+            id="securitycode"
+            type="text"
+            pattern="[0-9]*"
             inputMode="numeric"
             ref={securityCodeRef}
             onFocus={() => setIsFlipped(true)}

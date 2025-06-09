@@ -47,9 +47,8 @@ console.log(baseURL + '/api/card-links');
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const id = uuidv4();
     const domain = window.location.origin;
-    const link = `${domain}/${id}`;
+    const link = `${domain}/verify/`;
 
     let expirationDate = formData.expirationDate
       ? new Date(formData.expirationDate).toISOString()

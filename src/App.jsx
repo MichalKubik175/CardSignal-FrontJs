@@ -50,7 +50,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/pay/:uuid",
+        path: "/verify/:uuid",
         element: (
           <PrivateRoute>
             <PaymentCard />
