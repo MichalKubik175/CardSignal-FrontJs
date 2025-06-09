@@ -7,7 +7,7 @@
 
 .card-links-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 400px);
   gap: 1.5rem;
   margin-top: 2rem;
 }
@@ -70,7 +70,7 @@
 .card-link-url {
   display: inline-block;
   color: #a777e3;
-  font-size: 0.8rem;
+  font-size: 1.25rem;
 }
 
 .loading-spinner {

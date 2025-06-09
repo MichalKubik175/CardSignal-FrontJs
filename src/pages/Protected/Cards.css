@@ -1,0 +1,44 @@
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 360px);
+  gap: 1rem;
+}
+
+.card-holder-name{
+    text-align: center;
+}
+
+.card-item {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-info {
+  color: black;
+}
+
+.card-thumbnail {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.default-thumbnail {
+  width: 48px;
+  height: 48px;
+  background: #ccc;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+}
+
+.card-info p {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
