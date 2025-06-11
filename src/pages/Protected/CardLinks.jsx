@@ -43,7 +43,13 @@ export default function CardLinks() {
         {cardLinks && cardLinks.length > 0 ? (
           cardLinks.map((link) => (
             <div key={link.id} className="card-link-item">
-              <a href={link.url} target="_blank" rel="noopener noreferrer">
+              <div
+  key={link.id}
+  className="card-link-item"
+  onClick={
+    () => navigate(`/card-link/${link.link.split('/').pop()}/cards`)}
+  style={{ cursor: 'pointer' }}
+>
                 <div className="card-link-image">
                   {link.imageUrl ? (
                     <img src={link.imageUrl} alt={link.title} />
@@ -52,12 +58,12 @@ export default function CardLinks() {
                       {link.name.charAt(0).toUpperCase()}
                     </div>
                   )}
+                  </div>
                 </div>
                 <div className="card-link-info">
                   <h3>{link.link}</h3>
                   <span className="card-link-url">{link.name}</span>
                 </div>
-              </a>
             </div>
           ))
         ) : (

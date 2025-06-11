@@ -4,6 +4,7 @@ import CardLinks from './pages/Protected/CardLinks';
 import Login from './pages/Auth/Login';
 import Cards from './pages/Protected/Cards';
 import CreateCardLink from './pages/Protected/CreateCardLink'
+import CardListByCardLink from './pages/Protected/CardListByCardLink'
 import PaymentCard from './pages/Protected/PaymentCard';
 import PrivateRoute from './routers/PrivateRoute';
 import PublicRoute from './routers/PublicRoute';
@@ -54,6 +55,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <PaymentCard />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/card-link/:cardLinkId/cards",
+        element: (
+          <PrivateRoute>
+            <CardListByCardLink />
           </PrivateRoute>
         ),
       },
