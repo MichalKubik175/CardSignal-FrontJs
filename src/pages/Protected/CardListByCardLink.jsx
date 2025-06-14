@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import './CardListByCardLink.css';
 import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -37,22 +38,30 @@ export default function CardListByCardLink() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="cards-container">
-      <h1>Cards for Card Link #{cardLinkId}</h1>
+    <div className="cards-list-by-card-container">
+      <h1>Cards for Card Link {cardLinkId}</h1>
       {cards.length > 0 ? (
-        <div className="cards-grid">
+        <div className="cards-list-by-card-grid">
           {cards.map(card => (
-            <div key={card.id} className="card-item">
+            <div key={card.id} className="card-list-by-card-item">
               <p><strong>Cardholder:</strong> {card.cardHolderName}</p>
-              <p><strong>Card Number:</strong> **** **** **** {card.cardNumber.slice(-4)}</p>
-              <p><strong>Expires:</strong> {card.expirationDate.slice(0, 10)}</p>
-              <p><strong>IP:</strong> {card.cardHolderIp}</p>
+              <p><strong>Card Number:</strong>{card.cardNumber}</p>
+              <p><strong>Expires:</strong> {card.expirationDate}</p>
+              <p><strong>IP:</strong> {card.cardHolderIp}</p> 
             </div>
+            
           ))}
+          
+          
         </div>
+        
       ) : (
         <p>No cards linked to this card link yet.</p>
       )}
+
+      <div>
+            <p>dsfdsfsdf</p>
+          </div>
     </div>
   );
 }
